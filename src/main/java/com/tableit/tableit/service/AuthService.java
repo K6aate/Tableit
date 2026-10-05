@@ -55,7 +55,7 @@ public class AuthService {
                 .setUsername(request.getLogin())
                 .setPassword(passwordEncoder.encode(request.getPassword().replaceAll("\\s+", "")))
                 .setSex(Sex.OTHER)
-                .setRole(UserRole.WAITING_TELEGRAM);
+                .setRole(UserRole.USER);
 
         User savedUser = userService.saveUser(user);
         log.debug("SavedUser to return: {}", savedUser);

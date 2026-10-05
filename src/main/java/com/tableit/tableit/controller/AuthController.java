@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    @RoleSecured(UserRole.WAITING_TELEGRAM)
+    @RoleSecured(UserRole.USER)
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest request) {
         log.info("Change password attempt");
 

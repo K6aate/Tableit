@@ -27,13 +27,13 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    @RoleSecured(UserRole.WAITING_TELEGRAM)
+    @RoleSecured(UserRole.USER)
     public ResponseEntity<UserResponse> getMe() {
         return ResponseEntity.ok(userService.getMe());
     }
 
     @PutMapping
-    @RoleSecured(UserRole.WAITING_TELEGRAM)
+    @RoleSecured(UserRole.USER)
     public ResponseEntity<UserResponse> update(@RequestBody UserRequest request) {
         log.info("Update user Request object = {}", request);
         UserResponse userResponse = userService.update(request);

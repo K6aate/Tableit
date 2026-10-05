@@ -10,12 +10,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum UserRole {
 
-    WAITING_TELEGRAM(0),
-    STUDENT(1),
-    TEACHER(2),
-    CURATOR(3),
-    ADMIN(4),
-    DEVELOPER(5);
+    USER(1),
+    MANAGER(2),
+    ADMIN(3);
 
     @Getter
     private final int level;
