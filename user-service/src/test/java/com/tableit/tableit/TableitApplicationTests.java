@@ -1,13 +1,12 @@
-package com.paltsy.paltsy;
+package com.tableit.tableit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PaltsyApplicationTests {
+class TableitApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
-
 }
