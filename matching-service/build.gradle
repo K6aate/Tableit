@@ -55,9 +55,6 @@ dependencies {
     // --- Tests ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // --- S3 & AWS SDK (optional, enable when ready for S3 integration) ---
-    implementation("software.amazon.awssdk:s3:2.40.17")
 }
 
 tasks.named('test') {
