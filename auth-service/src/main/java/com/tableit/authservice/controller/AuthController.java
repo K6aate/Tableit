@@ -2,7 +2,9 @@ package com.tableit.authservice.controller;
 
 import com.tableit.authservice.config.auth.RoleSecured;
 import com.tableit.authservice.dto.auth.*;
+import com.tableit.authservice.dto.user.UserResponse;
 import com.tableit.authservice.service.AuthService;
+import com.tableit.authservice.service.UserService;
 import com.tableit.authservice.util.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
@@ -43,6 +46,12 @@ public class AuthController {
         LoginResponse res = authService.refresh(request);
         log.info("Refresh success");
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/me")
+    @RoleSecured(UserRole.USER)
+    public ResponseEntity<UserResponse> getMe() {
+        return ResponseEntity.ok(userService.getMe());
     }
 
     @PostMapping("/change-password")
