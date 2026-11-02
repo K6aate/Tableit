@@ -26,6 +26,10 @@ import java.util.Map;
 @Service
 public class JwtService {
 
+    public static final String TOKEN_TYPE_CLAIM = "token_type";
+    public static final String ACCESS_TOKEN_TYPE = "access";
+    public static final String REFRESH_TOKEN_TYPE = "refresh";
+
     @Value("${jwt.private-key.access}")
     private String jwtAccessPrivateKey;
 
@@ -63,17 +67,18 @@ public class JwtService {
         }
     }
     public String generateAccessToken(User userDetails) {
-        return generateToken(new HashMap<>(), userDetails, jwtAccessExpiration, accessPrivateKeyObj);
+        return generateToken(new HashMap<>(), userDetails, jwtAccessExpiration, accessPrivateKeyObj, ACCESS_TOKEN_TYPE);
     }
 
     public String generateRefreshToken(User userDetails) {
-        return generateToken(new HashMap<>(), userDetails, jwtRefreshExpiration, refreshPrivateKeyObj);
+        return generateToken(new HashMap<>(), userDetails, jwtRefreshExpiration, refreshPrivateKeyObj, REFRESH_TOKEN_TYPE);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, User userDetails, long expiration, PrivateKey privateKey) {
+    private String generateToken(Map<String, Object> extraClaims, User userDetails, long expiration, PrivateKey privateKey, String tokenType) {
         User user = userDetails;
 
         extraClaims.put("role", user.getRole().getName());
+        extraClaims.put(TOKEN_TYPE_CLAIM, tokenType);
 
         return Jwts.builder()
                 .setClaims(extraClaims)
@@ -148,19 +153,17 @@ public class JwtService {
     }
 
     public boolean isRefreshTokenValid(String token) {
+        Claims claims;
         try {
-            return !isTokenExpired(token, refreshPublicKeyObj);
+            claims = extractAllClaims(token, refreshPublicKeyObj);
         } catch (JwtException | IllegalArgumentException e) {
             throw new UnauthorizedException("Invalid token");
         }
-    }
-
-    private boolean isTokenExpired(String token, PublicKey publicKey) {
-        return extractExpiration(token, publicKey).before(new Date());
-    }
-
-    private Date extractExpiration(String token, PublicKey publicKey) {
-        return extractAllClaims(token, publicKey).getExpiration();
+        // Second guard besides the separate key pair: only tokens issued as refresh tokens may be used here.
+        if (!REFRESH_TOKEN_TYPE.equals(claims.get(TOKEN_TYPE_CLAIM, String.class))) {
+            throw new UnauthorizedException("Invalid token");
+        }
+        return !claims.getExpiration().before(new Date());
     }
 
     private Claims extractAllClaims(String token, PublicKey publicKey) {
