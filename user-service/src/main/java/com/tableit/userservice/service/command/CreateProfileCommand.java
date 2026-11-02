@@ -17,4 +17,8 @@ public record CreateProfileCommand(
         @URL(regexp = "^(?i)https?://.*") @Size(max = 2048) String avatarUrl,
         @Size(max = 1000) String bio
 ) {
+    // Runs before validation, so a cleared avatar URL is treated as absent rather than as an invalid URL.
+    public CreateProfileCommand {
+        avatarUrl = avatarUrl == null || avatarUrl.isBlank() ? null : avatarUrl.strip();
+    }
 }
