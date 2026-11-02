@@ -8,6 +8,7 @@ import com.tableit.userservice.exception.ResourceNotFoundException;
 import com.tableit.userservice.model.Interest;
 import com.tableit.userservice.model.UserProfile;
 import com.tableit.userservice.repository.CityRepository;
+import com.tableit.userservice.security.TestJwt;
 import com.tableit.userservice.service.command.CreateProfileCommand;
 import com.tableit.userservice.service.command.UpdateProfileCommand;
 import jakarta.validation.ConstraintViolationException;
@@ -20,6 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -38,6 +41,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UserProfileServiceTest {
 
     private static final LocalDate TODAY = LocalDate.of(2026, 6, 15);
+
+    @DynamicPropertySource
+    static void jwtKey(DynamicPropertyRegistry registry) {
+        TestJwt.registerAccessPublicKey(registry);
+    }
 
     @Autowired
     private UserProfileService userProfileService;
