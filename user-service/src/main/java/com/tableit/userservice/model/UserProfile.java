@@ -1,15 +1,9 @@
 package com.tableit.userservice.model;
 
-import com.tableit.userservice.util.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,8 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name = "users")
-public class User extends TimestampedEntity {
+@Table(name = "user_profiles")
+public class UserProfile extends TimestampedEntity {
 
     @Id
     @Column(name = "user_id", nullable = false, updatable = false)
