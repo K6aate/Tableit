@@ -11,10 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -33,6 +30,16 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    public User findByUuid(UUID uuid) {
+        return userRepository.findById(uuid)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+    }
+
+    public User findByUuid(String uuid) {
+        return findByUuid(UUID.fromString(uuid));
     }
 
     public List<User> findByUsernames(List<String> usernames) {
@@ -64,17 +71,18 @@ public class UserService {
                 .build();
     }
 
+
     private User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth =
+                SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new UnauthorizedException("Invalid token");
+        if (auth == null
+                || !auth.isAuthenticated()
+                || !(auth.getPrincipal() instanceof User user)) {
+            throw new UnauthorizedException("User is not authenticated");
         }
-        String username = auth.getName();
 
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return user;
     }
-
 
 }

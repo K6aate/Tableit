@@ -23,9 +23,6 @@ import java.security.SecureRandom;
 @RequiredArgsConstructor
 public class AuthService {
 
-    @Value("${notification.service.api-key}")
-    private String apiKey;
-
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -85,21 +82,15 @@ public class AuthService {
     }
 
     public UserRole getUserRole() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        Authentication auth =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null
+                || !auth.isAuthenticated()
+                || !(auth.getPrincipal() instanceof User user)) {
             throw new UnauthorizedException("User is not authenticated");
         }
-        
-        Object principal = authentication.getPrincipal();
-        String username;
-        
-        if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
-            username = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
-        } else {
-            username = principal.toString();
-        }
-        
-        User user = userService.findByUsername(username);
+
         return user.getRole();
     }
 
@@ -108,8 +99,8 @@ public class AuthService {
         if (!jwtService.isRefreshTokenValid(refreshToken)) {
             throw new IllegalArgumentException("Invalid refresh token"); // 401 Unauthorized
         }
-        String login = jwtService.extractUsernameFromRefreshToken(refreshToken);
-        User user = userService.findByUsername(login);
+        String uuid = jwtService.extractUsernameFromRefreshToken(refreshToken);
+        User user = userService.findByUuid(uuid);
 
         var newAccessToken = jwtService.generateAccessToken(user);
         var newRefreshToken = jwtService.generateRefreshToken(user);

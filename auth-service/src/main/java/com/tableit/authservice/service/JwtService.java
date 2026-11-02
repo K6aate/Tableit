@@ -77,7 +77,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(userDetails.getId().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
@@ -110,7 +110,7 @@ public class JwtService {
         }
     }
 
-    public String extractUsername(String token) {
+    public String extractUUID(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(accessPublicKeyObj)
@@ -123,10 +123,10 @@ public class JwtService {
         }
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, User user) {
         try {
-            String username = extractUsername(token);
-            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+            String uuid = extractUUID(token);
+            return uuid.equals(user.getId().toString()) && !isTokenExpired(token);
         } catch (Exception e) {
             throw new UnauthorizedException("Invalid token");
         }
